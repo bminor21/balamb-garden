@@ -3,25 +3,23 @@ import logo from './logo.svg';
 import './App.css';
 
 import Person from './Person/Person';
-import AssignmentOne from './Assignment1/AssignmentOne';
+// import AssignmentOne from './Assignment1/AssignmentOne';
 
 class App extends Component {
   state = {
     persons: [
       { name: 'Brett', age: 31},
-      { name: 'Rikku', age: 26 }
+      { name: 'Rikku', age: 26 },
+      { name: 'Yuna', age: 24 }
     ],
     showPersons: false,
   }
 
-  handleNameSwitch = (newName) => {
-    this.setState({
-      persons: [
-        { name: newName, age: 34 },
-        { name: 'Stephanie', age: 27 }
-      ]
-    })
-  };
+  deletePersonHandler = (personIndex) => {
+    const persons = this.state.persons.slice();
+    persons.splice(personIndex, 1);
+    this.setState({persons});
+  }
 
   togglePersons = () => {
     this.setState({
@@ -29,13 +27,10 @@ class App extends Component {
     })
   }
 
-  handleNameChange = (event) => {
-    this.setState({
-      persons: [
-        { name: event.target.value, age: 34 },
-        { name: 'Stephanie', age: 27 }
-      ]
-    })
+  handleNameChange = (event, index) => {
+    const persons = this.state.persons.slice();
+    persons[index].name = event.target.value;
+    this.setState({persons});
   }
 
   render() {
@@ -48,30 +43,33 @@ class App extends Component {
       cursor: 'pointer'
     };
 
+    let persons = null;
+    
+    if(this.state.showPersons){
+      persons = (
+          <div>
+            {this.state.persons.map( (person, index) => {
+              return ( 
+                <Person name={person.name}
+                        age={person.age}
+                        handleClick={() => this.deletePersonHandler(index)}
+                        updateName={this.handleNameChange()} 
+                        index={index}/> 
+              );
+            })}
+          </div>
+      );
+    }
+
     return (
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
         </header>
-        <button onClick={this.handleNameSwitch.bind(this, 'Daniel')}
-                style={style}>Switch Name</button>
-
         <button onClick={this.togglePersons.bind(this)}
                 style={style}>Toggle Persons</button>
-
-        {this.state.showPersons &&
-          <div>
-            <Person name={this.state.persons[0].name} 
-                    age={this.state.persons[0].age} 
-                    handleClick={ () => this.handleNameSwitch('Asdf') }
-                    updateName={this.handleNameChange}/>
-
-            <Person name={this.state.persons[1].name} 
-                    age={this.state.persons[1].age} />
-            </div>
-        }
-
+        {persons}
       </div>
     );
   }
