@@ -4,13 +4,14 @@ import './App.css';
 
 import Person from './Person/Person';
 // import AssignmentOne from './Assignment1/AssignmentOne';
+// import AssignmentTwo from './Assignments/Assignment2/AssignmentTwo';
 
 class App extends Component {
   state = {
     persons: [
-      { name: 'Brett', age: 31},
-      { name: 'Rikku', age: 26 },
-      { name: 'Yuna', age: 24 }
+      { id: 1, name: 'Brett', age: 31},
+      { id: 2, name: 'Rikku', age: 26 },
+      { id: 3, name: 'Yuna', age: 24 }
     ],
     showPersons: false,
   }
@@ -27,9 +28,20 @@ class App extends Component {
     })
   }
 
-  handleNameChange = (event, index) => {
-    const persons = this.state.persons.slice();
-    persons[index].name = event.target.value;
+  handleNameChange = (event, id) => {
+    const index = this.state.persons.findIndex( p => {
+      return p.id === id;
+    });
+
+    const person = {
+      ...this.state.persons[index]
+    };
+
+    person.name = event.target.value;
+    
+    const persons = [...this.state.persons];
+    persons[index] = person;
+
     this.setState({persons});
   }
 
@@ -48,12 +60,13 @@ class App extends Component {
     if(this.state.showPersons){
       persons = (
           <div>
-            {this.state.persons.map( (person, index) => {
+            {this.state.persons.map((person, index) => {
               return ( 
                 <Person name={person.name}
                         age={person.age}
                         handleClick={() => this.deletePersonHandler(index)}
-                        updateName={this.handleNameChange()} 
+                        key={person.id}
+                        updateName={(event) => this.handleNameChange(event, person.id)} 
                         index={index}/> 
               );
             })}
@@ -61,7 +74,7 @@ class App extends Component {
       );
     }
 
-    return (
+   return (
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
@@ -72,6 +85,7 @@ class App extends Component {
         {persons}
       </div>
     );
+    
   }
 }
 
